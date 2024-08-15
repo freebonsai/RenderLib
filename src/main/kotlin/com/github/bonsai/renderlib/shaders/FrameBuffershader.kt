@@ -7,12 +7,12 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.shader.Framebuffer
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL20.glUseProgram
+import java.io.InputStream
 
 
-abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader) {
+abstract class FramebufferShader(fragmentShader: InputStream, vertexShader: InputStream) : Shader(fragmentShader, vertexShader) {
     protected var radius: Float = 2f
     protected var quality: Float = 1f
-
     private var entityShadows = false
 
     fun startDraw(partialTicks: Float) {

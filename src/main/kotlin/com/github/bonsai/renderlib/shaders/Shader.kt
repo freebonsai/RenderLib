@@ -2,9 +2,10 @@ package com.github.bonsai.renderlib.shaders
 
 import org.apache.commons.io.IOUtils
 import org.lwjgl.opengl.*
+import java.io.InputStream
 
 
-abstract class Shader(fragmentShader: String) {
+abstract class Shader(fragmentShader: InputStream, vertexShader: InputStream) {
     private var programId: Int = 0
     private var uniformsMap = HashMap<String, Int>()
 
@@ -13,16 +14,13 @@ abstract class Shader(fragmentShader: String) {
         var fragmentShaderID = 0
 
         try {
-            val vertexStream = javaClass.getResourceAsStream("/shaders/source/entity/vertex.vsh")
-            vertexShaderID = createShader(IOUtils.toString(vertexStream), ARBVertexShader.GL_VERTEX_SHADER_ARB, "/shaders/source/entity/vertex.vsh")
-            IOUtils.closeQuietly(vertexStream)
+            vertexShaderID = createShader(IOUtils.toString(vertexShader), ARBVertexShader.GL_VERTEX_SHADER_ARB, "/shaders/source/entity/vertex.vsh")
+            IOUtils.closeQuietly(vertexShader)
 
-            val fragmentStream =
-                javaClass.getResourceAsStream("/shaders/$fragmentShader")
-            fragmentShaderID = createShader(IOUtils.toString(fragmentStream), ARBFragmentShader.GL_FRAGMENT_SHADER_ARB, "/shaders/$fragmentShader")
-            IOUtils.closeQuietly(fragmentStream)
+            fragmentShaderID = createShader(IOUtils.toString(fragmentShader), ARBFragmentShader.GL_FRAGMENT_SHADER_ARB, "/shaders/$fragmentShader")
+            IOUtils.closeQuietly(fragmentShader)
         } catch (e: Exception) {
-            println("RenderLib: Error creating shader $fragmentShader")
+            println("RenderLib: Error creating shader ${this::class.java.simpleName}")
             e.printStackTrace()
         }
 
@@ -71,7 +69,7 @@ abstract class Shader(fragmentShader: String) {
             ARBShaderObjects.glCompileShaderARB(shader)
 
             if (ARBShaderObjects.glGetObjectParameteriARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL11.GL_FALSE)
-                throw RuntimeException("RenderLib: Error creating shader: " + getLogInfo(shader))
+                throw RuntimeException("RenderLib: Error creating shader: ${this::class.java.simpleName} " + getLogInfo(shader))
             else println("RenderLib: Successfully created shader $shaderName")
 
             return shader
@@ -89,11 +87,10 @@ abstract class Shader(fragmentShader: String) {
         uniformsMap[uniformName] = location
     }
 
-    fun setupUniform(uniformName: String) {
+    fun setupUniform(uniformName: String) =
         setUniform(uniformName, GL20.glGetUniformLocation(programId, uniformName))
-    }
 
-    fun getUniform(uniformName: String): Int {
-        return uniformsMap[uniformName] ?: throw NoSuchElementException("No uniform with name $uniformName")
-    }
+
+    fun getUniform(uniformName: String) =
+        uniformsMap[uniformName] ?: throw NoSuchElementException("No uniform with name $uniformName")
 }
