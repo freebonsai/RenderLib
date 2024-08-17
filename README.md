@@ -20,8 +20,3 @@ dependencies {
     implementation("com.github.bonsai:RenderLib:{version}")
 }
 ```
-
-## Usage
-
-By using Kotlin DSL, you're able to create a command tree
-by essentially _visualizing_ it.
