@@ -3,6 +3,7 @@ package com.github.bonsai.renderlib.utils
 import com.github.bonsai.renderlib.RenderLib.partialTicks
 import com.github.bonsai.renderlib.utils.RenderUtils2D.Box2D
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
@@ -20,6 +21,10 @@ fun Int.bind() {
     GlStateManager.resetColor()
     floatValues.let { GlStateManager.color(it[0], it[1], it[2], it[3]) }
 }
+
+fun Int.multiplyAlpha(factor: Float): Int = (this and 0xFFFFFF00.toInt()) or (alpha * 255 * factor).toInt().coerceIn(0, 255)
+
+fun Int.withAlpha(newAlpha: Float): Int = (this and 0xFFFFFF00.toInt()) or (newAlpha * 255).toInt().coerceIn(0, 255)
 
 val Box2D.corners get() = arrayListOf(x,y, w,y, w,h, x,h, x,y)
 
@@ -58,4 +63,14 @@ fun AxisAlignedBB.outlineBounds(): AxisAlignedBB =
 
 fun Vec3.toAABB(add: Double = 1.0): AxisAlignedBB {
     return AxisAlignedBB(this.xCoord, this.yCoord, this.zCoord, this.xCoord + add, this.yCoord + add, this.zCoord + add).outlineBounds()
+}
+
+fun Vec3.translate() = RenderUtils3D.translate(xCoord, yCoord, zCoord)
+
+inline operator fun WorldRenderer.invoke(block: WorldRenderer.() -> Unit) {
+    block.invoke(this)
+}
+
+fun Vec3.addVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3 {
+    return this.addVector(x.toDouble(), y.toDouble(), z.toDouble())
 }

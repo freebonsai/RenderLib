@@ -1,12 +1,11 @@
 package com.github.bonsai.renderlib
 
 import com.github.bonsai.renderlib.RenderLib.mc
-import com.github.bonsai.renderlib.utils.RenderUtils2D
-import com.github.bonsai.renderlib.utils.RenderUtils3D
-import com.github.bonsai.renderlib.utils.floatValues
-import com.github.bonsai.renderlib.utils.toAABB
+import com.github.bonsai.renderlib.utils.*
+import com.github.bonsai.renderlib.utils.RenderUtils3D.drawBeaconBeam
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
+import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -35,7 +34,7 @@ object Renderer {
      */
     fun drawBox(
         aabb: AxisAlignedBB,
-        color: Color,
+        color: Int,
         outlineWidth: Number = 3,
         outlineAlpha: Number = 1,
         fillAlpha: Number = 1,
@@ -60,21 +59,21 @@ object Renderer {
      */
     fun drawBlock(
         pos: BlockPos,
-        color: Color,
+        color: Int,
         outlineWidth: Number = 3,
         outlineAlpha: Number = 1,
         fillAlpha: Number = 1,
         depth: Boolean = false,
         lineSmoothing: Boolean = true
     ) {
-        val block = getBlockAt(pos)
+        val block = mc.theWorld?.getBlockState(pos)?.block ?: Blocks.air
         block.setBlockBoundsBasedOnState(mc.theWorld, pos)
         drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds(), color, outlineWidth, outlineAlpha, fillAlpha, depth, lineSmoothing)
     }
 
     fun drawStyledBlock(
         pos: BlockPos,
-        color: Color,
+        color: Int,
         style: Int,
         width: Number = 3,
         depth: Boolean = false,
