@@ -13,8 +13,8 @@ object RenderLib {
     internal val mc: Minecraft = Minecraft.getMinecraft()
     internal var partialTicks = 0f
     internal val tessellator: Tessellator = Tessellator.getInstance()
-    internal val worldRenderer: WorldRenderer = tessellator.worldRenderer
-    internal val renderManager: RenderManager = mc.renderManager
+    internal val worldRenderer = tessellator.worldRenderer
+    internal val renderManager = mc.renderManager
 
     fun renderWorldTrigger(pt: Float) {
         partialTicks = pt

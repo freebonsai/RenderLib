@@ -1,12 +1,9 @@
 package com.github.bonsai.renderlib.shaders
 
 import com.github.bonsai.renderlib.RenderLib.mc
-import com.github.bonsai.renderlib.utils.callMappedMethod
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.shader.Framebuffer
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL20.glUseProgram
 import java.io.InputStream
 
 
@@ -14,7 +11,7 @@ abstract class FramebufferShader(fragmentShader: InputStream, vertexShader: Inpu
     protected var radius: Float = 2f
     private var entityShadows = false
 
-    fun startDraw(partialTicks: Float) {
+    fun startDraw() {
         GlStateManager.pushMatrix()
 
         framebuffer = setupFrameBuffer(framebuffer)
@@ -29,10 +26,10 @@ abstract class FramebufferShader(fragmentShader: InputStream, vertexShader: Inpu
         this.radius = radius
 
         startShader()
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        framebuffer.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false);
-        GlStateManager.disableBlend();
+        GlStateManager.enableBlend()
+        GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        framebuffer.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false)
+        GlStateManager.disableBlend()
         stopShader()
 
         GlStateManager.popMatrix()
@@ -52,6 +49,6 @@ abstract class FramebufferShader(fragmentShader: InputStream, vertexShader: Inpu
     }
 
     companion object {
-        private var framebuffer: Framebuffer = Framebuffer(mc.displayWidth, mc.displayHeight, true)
+        private var framebuffer = Framebuffer(mc.displayWidth, mc.displayHeight, true)
     }
 }

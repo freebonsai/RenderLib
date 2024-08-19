@@ -4,9 +4,8 @@ import org.apache.commons.io.IOUtils
 import org.lwjgl.opengl.*
 import java.io.InputStream
 
-
 abstract class Shader(fragmentShader: InputStream, vertexShader: InputStream) {
-    private var programId: Int = 0
+    private var programId = 0
     private var uniformsMap = HashMap<String, Int>()
 
     init {
@@ -26,7 +25,7 @@ abstract class Shader(fragmentShader: InputStream, vertexShader: InputStream) {
 
         if (vertexShaderID != 0 && fragmentShaderID != 0) {
             programId = ARBShaderObjects.glCreateProgramObjectARB()
-            if (programId != 0) {
+            if (programId == 0) {
                 ARBShaderObjects.glAttachObjectARB(programId, vertexShaderID)
                 ARBShaderObjects.glAttachObjectARB(programId, fragmentShaderID)
 
@@ -38,20 +37,12 @@ abstract class Shader(fragmentShader: InputStream, vertexShader: InputStream) {
     }
 
     fun startShader() {
-        GL11.glPushMatrix()
         GL20.glUseProgram(programId)
-
-        if (uniformsMap.isEmpty()) {
-            setupUniforms()
-        }
-
+        if (uniformsMap.isEmpty()) setupUniforms()
         updateUniforms()
     }
 
-    fun stopShader() {
-        GL20.glUseProgram(0)
-        GL11.glPopMatrix()
-    }
+    fun stopShader() = GL20.glUseProgram(0)
 
     abstract fun setupUniforms()
 

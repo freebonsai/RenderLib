@@ -32,15 +32,7 @@ object Renderer {
      * @param fillAlpha    The alpha value of the fill (default is 1).
      * @param depth        Indicates whether to draw with depth (default is true).
      */
-    fun drawBox(
-        aabb: AxisAlignedBB,
-        color: Int,
-        outlineWidth: Number = 3,
-        outlineAlpha: Number = 1,
-        fillAlpha: Number = 1,
-        depth: Boolean = false,
-        lineSmoothing: Boolean = true
-    ) {
+    fun drawBox(aabb: AxisAlignedBB, color: Int, outlineWidth: Number = 3, outlineAlpha: Number = 1, fillAlpha: Number = 1, depth: Boolean = false, lineSmoothing: Boolean = true) {
         if (outlineAlpha == 0f && fillAlpha == 0f) return
         RenderUtils3D.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth, lineSmoothing)
 
@@ -57,28 +49,13 @@ object Renderer {
      * @param fillAlpha    The alpha value of the fill (default is 1).
      * @param depth        Indicates whether to draw with depth (default is false).
      */
-    fun drawBlock(
-        pos: BlockPos,
-        color: Int,
-        outlineWidth: Number = 3,
-        outlineAlpha: Number = 1,
-        fillAlpha: Number = 1,
-        depth: Boolean = false,
-        lineSmoothing: Boolean = true
-    ) {
+    fun drawBlock(pos: BlockPos, color: Int, outlineWidth: Number = 3, outlineAlpha: Number = 1, fillAlpha: Number = 1, depth: Boolean = false, lineSmoothing: Boolean = true) {
         val block = mc.theWorld?.getBlockState(pos)?.block ?: Blocks.air
         block.setBlockBoundsBasedOnState(mc.theWorld, pos)
         drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds(), color, outlineWidth, outlineAlpha, fillAlpha, depth, lineSmoothing)
     }
 
-    fun drawStyledBlock(
-        pos: BlockPos,
-        color: Int,
-        style: Int,
-        width: Number = 3,
-        depth: Boolean = false,
-        lineSmoothing: Boolean = true
-    ) {
+    fun drawStyledBlock(pos: BlockPos, color: Int, style: Int, width: Number = 3, depth: Boolean = false, lineSmoothing: Boolean = true) {
         when (style) {
             0 -> drawBlock(pos, color, width, 0, color.alpha, depth, lineSmoothing)
             1 -> drawBlock(pos, color, width, color.alpha, 0, depth, lineSmoothing)
@@ -86,13 +63,7 @@ object Renderer {
         }
     }
 
-    fun drawStyledBox(
-        aabb: AxisAlignedBB,
-        color: Int,
-        style: Int,
-        width: Number = 3,
-        depth: Boolean = false
-    ) {
+    fun drawStyledBox(aabb: AxisAlignedBB, color: Int, style: Int, width: Number = 3, depth: Boolean = false) {
         when (style) {
             0 -> drawBox(aabb, color, width, 0, color.floatValues[3], depth)
             1 -> drawBox(aabb, color, width, color.floatValues[3], 0, depth)
@@ -108,9 +79,8 @@ object Renderer {
      * @param lineWidth The width of the line (default is 3).
      * @param depth     Indicates whether to draw with depth (default is false).
      */
-    fun draw3DLine(vararg points: Vec3, color: Int, lineWidth: Float = 3f, depth: Boolean = false) {
-        RenderUtils3D.drawLines(*points, color = color, lineWidth = lineWidth, depth = depth)
-    }
+    fun draw3DLine(vararg points: Vec3, color: Int, lineWidth: Float = 3f, depth: Boolean = false) =
+            RenderUtils3D.drawLines(*points, color = color, lineWidth = lineWidth, depth = depth)
 
     /**
      * Draws a custom beacon with specified title, position, color, and optional parameters.
@@ -150,16 +120,8 @@ object Renderer {
      * @param scale           The scale of the text (default is 0.03).
      * @param shadow          Indicates whether to render a shadow for the text (default is true).
      */
-    fun drawStringInWorld(
-        text: String,
-        vec3: Vec3,
-        color: Int = -1,
-        depth: Boolean = false,
-        scale: Float = 0.03f,
-        shadow: Boolean = true
-    ) {
-        RenderUtils3D.drawStringInWorld(text, vec3, color, depth, scale, shadow)
-    }
+    fun drawStringInWorld(text: String, vec3: Vec3, color: Int = -1, depth: Boolean = false, scale: Float = 0.03f, shadow: Boolean = true) =
+            RenderUtils3D.drawStringInWorld(text, vec3, color, depth, scale, shadow)
 
     /**
      * Draws a cylinder in the world with the specified parameters.
@@ -181,13 +143,12 @@ object Renderer {
         pos: Vec3, baseRadius: Float, topRadius: Float, height: Float,
         slices: Int, stacks: Int, rot1: Float, rot2: Float, rot3: Float,
         color: Int, phase: Boolean = false, lineMode: Boolean = false
-    ) {
-        RenderUtils3D.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, lineMode, phase)
-    }
+    ) =
+            RenderUtils3D.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, lineMode, phase)
 
-    fun draw2DEntity(entity: Entity, color: Int, lineWidth: Float) {
-        RenderUtils2D.draw2DESP(entity.entityBoundingBox, color, lineWidth)
-    }
+
+    fun draw2DEntity(entity: Entity, color: Int, lineWidth: Float) =
+            RenderUtils2D.draw2DESP(entity.entityBoundingBox, color, lineWidth)
 
     private var displayTitle = ""
     private var titleTicks = 0
@@ -204,7 +165,6 @@ object Renderer {
         titleTicks = 0
     }
 
-    @SubscribeEvent
     fun onOverlay(event: RenderGameOverlayEvent.Pre) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL || titleTicks <= 0) return
         mc.entityRenderer.setupOverlayRendering()
@@ -212,14 +172,10 @@ object Renderer {
         mc.fontRendererObj.drawString(displayTitle, sr.scaledWidth / 2, (sr.scaledHeight / 2.5f).toInt(), displayColor)
     }
 
-    @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
         titleTicks--
     }
 
-    @SubscribeEvent
-    fun worldLoad(event: WorldEvent.Load) {
-        clearTitle()
-    }
+    fun worldLoad(event: WorldEvent.Load) = clearTitle()
 }
