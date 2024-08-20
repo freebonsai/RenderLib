@@ -11,7 +11,6 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.max
 import kotlin.math.min
@@ -32,11 +31,14 @@ object Renderer {
      * @param fillAlpha    The alpha value of the fill (default is 1).
      * @param depth        Indicates whether to draw with depth (default is true).
      */
-    fun drawBox(aabb: AxisAlignedBB, color: Int, outlineWidth: Number = 3, outlineAlpha: Number = 1, fillAlpha: Number = 1, depth: Boolean = false, lineSmoothing: Boolean = true) {
+    fun drawBox(aabb: AxisAlignedBB, color: Int, style: Int, fillAlpha: Number = 1, outlineAlpha: Number = 1, outlineWidth: Number = 3, depth: Boolean = false, lineSmoothing: Boolean = true) {
         if (outlineAlpha == 0f && fillAlpha == 0f) return
-        RenderUtils3D.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth, lineSmoothing)
 
-        RenderUtils3D.drawFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), depth = depth)
+        when (style) {
+            0 -> RenderUtils3D.drawFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), depth = depth)
+            1 -> RenderUtils3D.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth)
+            2 -> RenderUtils3D.drawOutlinedFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), fillAlpha, outlineAlpha, outlineWidth, depth, lineSmoothing)
+        }
     }
 
     /**
@@ -49,26 +51,10 @@ object Renderer {
      * @param fillAlpha    The alpha value of the fill (default is 1).
      * @param depth        Indicates whether to draw with depth (default is false).
      */
-    fun drawBlock(pos: BlockPos, color: Int, outlineWidth: Number = 3, outlineAlpha: Number = 1, fillAlpha: Number = 1, depth: Boolean = false, lineSmoothing: Boolean = true) {
+    fun drawBlock(pos: BlockPos, color: Int, style: Int, outlineWidth: Number = 3, outlineAlpha: Number = 1, fillAlpha: Number = 1, depth: Boolean = false, lineSmoothing: Boolean = true) {
         val block = mc.theWorld?.getBlockState(pos)?.block ?: Blocks.air
         block.setBlockBoundsBasedOnState(mc.theWorld, pos)
-        drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds(), color, outlineWidth, outlineAlpha, fillAlpha, depth, lineSmoothing)
-    }
-
-    fun drawStyledBlock(pos: BlockPos, color: Int, style: Int, width: Number = 3, depth: Boolean = false, lineSmoothing: Boolean = true) {
-        when (style) {
-            0 -> drawBlock(pos, color, width, 0, color.alpha, depth, lineSmoothing)
-            1 -> drawBlock(pos, color, width, color.alpha, 0, depth, lineSmoothing)
-            2 -> drawBlock(pos, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth, lineSmoothing)
-        }
-    }
-
-    fun drawStyledBox(aabb: AxisAlignedBB, color: Int, style: Int, width: Number = 3, depth: Boolean = false) {
-        when (style) {
-            0 -> drawBox(aabb, color, width, 0, color.floatValues[3], depth)
-            1 -> drawBox(aabb, color, width, color.floatValues[3], 0, depth)
-            2 -> drawBox(aabb, color, width, color.floatValues[3], color.multiplyAlpha(.75f).alpha, depth)
-        }
+        drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds(), color, style, outlineWidth, outlineAlpha, fillAlpha, depth, lineSmoothing)
     }
 
     /**
@@ -95,8 +81,7 @@ object Renderer {
      */
     fun drawCustomBeacon(title: String, vec3: Vec3, color: Int, beacon: Boolean = true, increase: Boolean = true, noFade: Boolean = false, distance: Boolean = true, style: Int = 1) {
         val dist = vec3.distanceTo(mc.thePlayer.positionVector)
-        drawBox(vec3.toAABB(), color, depth = false,
-            outlineAlpha = if (style == 0) 0 else color.floatValues[3], fillAlpha = if (style == 1) 0 else color.floatValues[3])
+        drawBox(vec3.toAABB(), color, depth = false, style = style)
 
         RenderUtils3D.drawStringInWorld(
             if (distance) "$title §r§f(§3${dist.toInt()}m§f)" else title,
@@ -144,7 +129,7 @@ object Renderer {
         slices: Int, stacks: Int, rot1: Float, rot2: Float, rot3: Float,
         color: Int, phase: Boolean = false, lineMode: Boolean = false
     ) =
-            RenderUtils3D.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, lineMode, phase)
+        RenderUtils3D.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, lineMode, phase)
 
 
     fun draw2DEntity(entity: Entity, color: Int, lineWidth: Float) =
