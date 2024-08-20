@@ -78,6 +78,7 @@ object RenderUtils3D {
         GlStateManager.disableBlend()
         GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
+        GlStateManager.enableLighting()
         (-1).bind()
         resetDepth()
         GlStateManager.popMatrix()
