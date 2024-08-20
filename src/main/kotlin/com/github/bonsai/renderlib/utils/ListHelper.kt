@@ -2,7 +2,6 @@ package com.github.bonsai.renderlib.utils
 
 import org.lwjgl.opengl.GL11
 
-
 object ListHelper {
     data class GLList(var id: Int = -1)
 

@@ -143,8 +143,8 @@ object RenderUtils3D {
         color: Int, depth: Boolean = false, lineMode: Boolean = false
     ) {
         preDraw()
-        GL11.glLineWidth(2.0f)
         depth(depth)
+        GL11.glLineWidth(2.0f)
 
         color.bind()
         translate(pos.xCoord, pos.yCoord, pos.zCoord)
@@ -174,8 +174,6 @@ object RenderUtils3D {
 
         postDraw()
     }
-
-
 
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
 
@@ -316,6 +314,32 @@ object RenderUtils3D {
         GL11.glLineWidth(2f)
         postDraw()
     }
+
+    fun drawOutlinedFilledAABB(aabb: AxisAlignedBB, color: Int, fillAlpha: Number = 1, outlineAlpha: Number = 1, thickness: Number = 3f, depthTest: Boolean = false, smoothLines: Boolean = true) {
+        preDraw()
+        GlStateManager.enableCull()
+
+        color.withAlpha(fillAlpha.toFloat()).bind()
+        addVertexesForFilledBox(aabb)
+        tessellator.draw()
+
+        GL11.glLineWidth(thickness.toFloat())
+        if (smoothLines) {
+            GL11.glEnable(GL11.GL_LINE_SMOOTH)
+            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
+        }
+
+        color.withAlpha(outlineAlpha.toFloat()).bind()
+        addVertexesForOutlinedBox(aabb)
+        tessellator.draw()
+
+        if (smoothLines) GL11.glDisable(GL11.GL_LINE_SMOOTH)
+
+        GlStateManager.disableCull()
+        GL11.glLineWidth(2f)
+        postDraw()
+    }
+
 
     private fun addVertexesForFilledBox(aabb: AxisAlignedBB) {
         with(aabb) { worldRenderer {
